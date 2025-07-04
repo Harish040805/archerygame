@@ -22,12 +22,12 @@ const iframeContent = `
     <head>
       <style>
         body{
-			font-family: Arial, sans-serif;
-			background-color: skyblue; 
-			text-align: center; 
-			margin-top: 20%;
-		}
-		button {
+		font-family: Arial, sans-serif;
+		background-color: skyblue; 
+		text-align: center; 
+		margin-top: 20%;
+	}
+	button {
           padding: 10px 20px; 
           border: none; 
           border-radius: 5px; 
@@ -84,24 +84,33 @@ document.addEventListener('mousemove', (e) => {
   if (isDragging) {
     const dx = e.clientX - startX;
     const dy = e.clientY - startY;
-    if (initialArrowLeft + dx >= initialArrowLeft) {
-      arrow.style.left = `${initialArrowLeft + dx}px`;
+
+    const newLeft = initialArrowLeft + dx;
+    if (newLeft <= initialArrowLeft && newLeft >= initialArrowLeft - 150) {
+      arrow.style.left = `${newLeft}px`;
     }
     arrow.style.top = `${initialArrowTop + dy}px`;
   }
 });
 
 document.addEventListener('mouseup', (e) => {
+  if (!isDragging) return;
   isDragging = false;
-  let intervalId = setInterval(() => {
+
+  const pulledDistance = initialArrowLeft - arrow.offsetLeft;
+  const maxPower = 50; 
+  const minPower = 10; 
+  const power = Math.min(maxPower, Math.max(minPower, pulledDistance / 2));
+
+  const fly = () => {
     let arrowLeft = arrow.offsetLeft;
-    let thresholdLeft = 16 * window.innerWidth / 100;
-    if (arrowLeft <= thresholdLeft) {
-      clearInterval(intervalId);
-    } else {
-      arrow.style.left = `${arrowLeft - 30}px`;
+    if (arrowLeft >= window.innerWidth) {
+      return;
     }
-  }, 16);
+    arrow.style.left = `${arrowLeft + power}px`;
+    requestAnimationFrame(fly);
+  };
+  fly();
 });
   </script>
 </body>
