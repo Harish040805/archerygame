@@ -51,6 +51,7 @@ iframe.srcdoc = iframeContent;
 document.body.appendChild(iframe);
 </script>
 <h3>Welcome to the Archery Game</h3>
+	<h2 id="score-board" style="text-align: center; color: #fff;">Score: 0</h2>
   <div class="archery-board" id="archery-board1"></div>
   <div class="archery-board" id="archery-board2"></div>
   <div class="archery-board" id="archery-board3"></div>
@@ -103,6 +104,37 @@ document.addEventListener('mouseup', (e) => {
     }
   }, 16);
 });
+	  const scoreBoard = document.getElementById('score-board');
+let score = 0;
+
+function flyArrowWithScore() {
+  let arrowLeft = arrow.offsetLeft;
+
+  const fly = () => {
+    arrowLeft = arrow.offsetLeft;
+    if (arrowLeft <= 0) {
+      // Check collision with board
+      boards.forEach(board => {
+        const boardRect = board.getBoundingClientRect();
+        const arrowRect = arrow.getBoundingClientRect();
+        if (
+          arrowRect.left <= boardRect.right &&
+          arrowRect.top >= boardRect.top &&
+          arrowRect.bottom <= boardRect.bottom
+        ) {
+          score += 10; // You can set different scores based on board hit
+          scoreBoard.textContent = `Score: ${score}`;
+        }
+      });
+      return;
+    }
+    arrow.style.left = `${arrowLeft - 15}px`;
+    requestAnimationFrame(fly);
+  };
+
+  fly();
+}
+
   </script>
 </body>
 </html>
