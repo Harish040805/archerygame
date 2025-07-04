@@ -84,37 +84,24 @@ document.addEventListener('mousemove', (e) => {
   if (isDragging) {
     const dx = e.clientX - startX;
     const dy = e.clientY - startY;
-
-    // Allow dragging arrow to the right (pulling backward) up to 150px, prevent pushing forward
-    const newLeft = initialArrowLeft + dx;
-    if (newLeft >= initialArrowLeft && newLeft <= initialArrowLeft + 150) {
-      arrow.style.left = `${newLeft}px`;
+    if (initialArrowLeft + dx >= initialArrowLeft) {
+      arrow.style.left = ${initialArrowLeft + dx}px;
     }
-    arrow.style.top = `${initialArrowTop + dy}px`;
+    arrow.style.top = ${initialArrowTop + dy}px;
   }
 });
 
 document.addEventListener('mouseup', (e) => {
-  if (!isDragging) return;
   isDragging = false;
-
-  // Calculate how much the arrow was pulled back (right)
-  const pulledDistance = arrow.offsetLeft - initialArrowLeft;
-  const maxPower = 50; 
-  const minPower = 10; 
-  const power = Math.min(maxPower, Math.max(minPower, pulledDistance / 2));
-
-  // Smooth leftward movement towards the target
-  const fly = () => {
+  let intervalId = setInterval(() => {
     let arrowLeft = arrow.offsetLeft;
-    if (arrowLeft <= 0) { 
-      return;
+    let thresholdLeft = 16 * window.innerWidth / 100;
+    if (arrowLeft <= thresholdLeft) {
+      clearInterval(intervalId);
+    } else {
+      arrow.style.left = ${arrowLeft - 30}px;
     }
-    arrow.style.left = `${arrowLeft - power}px`;
-    requestAnimationFrame(fly);
-  };
-  
-  fly();
+  }, 16);
 });
   </script>
 </body>
