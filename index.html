@@ -85,8 +85,9 @@ document.addEventListener('mousemove', (e) => {
     const dx = e.clientX - startX;
     const dy = e.clientY - startY;
 
+    // Allow dragging arrow to the right (pulling backward) up to 150px, prevent pushing forward
     const newLeft = initialArrowLeft + dx;
-    if (newLeft <= initialArrowLeft && newLeft >= initialArrowLeft - 150) {
+    if (newLeft >= initialArrowLeft && newLeft <= initialArrowLeft + 150) {
       arrow.style.left = `${newLeft}px`;
     }
     arrow.style.top = `${initialArrowTop + dy}px`;
@@ -97,19 +98,22 @@ document.addEventListener('mouseup', (e) => {
   if (!isDragging) return;
   isDragging = false;
 
-  const pulledDistance = initialArrowLeft - arrow.offsetLeft;
+  // Calculate how much the arrow was pulled back (right)
+  const pulledDistance = arrow.offsetLeft - initialArrowLeft;
   const maxPower = 50; 
   const minPower = 10; 
   const power = Math.min(maxPower, Math.max(minPower, pulledDistance / 2));
 
+  // Smooth leftward movement towards the target
   const fly = () => {
     let arrowLeft = arrow.offsetLeft;
-    if (arrowLeft >= window.innerWidth) {
+    if (arrowLeft <= 0) { 
       return;
     }
-    arrow.style.left = `${arrowLeft + power}px`;
+    arrow.style.left = `${arrowLeft - power}px`;
     requestAnimationFrame(fly);
   };
+  
   fly();
 });
   </script>
